@@ -1,0 +1,5 @@
+{
+  "name": "Circle Escrow Simulator",
+  "description": "A UI interface for testing Circle SDK Escrow workflows, simulating wallet connection, deposits, and withdrawals.",
+  "requestFramePermissions": []
+}
