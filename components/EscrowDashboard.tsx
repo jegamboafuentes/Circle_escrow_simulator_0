@@ -68,8 +68,8 @@ export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, onTran
           <h3 className="text-3xl font-bold text-white tracking-tight">
             ${wallet.escrowBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </h3>
-          <div className="flex items-center gap-1 mt-2 text-xs font-medium text-indigo-300 bg-indigo-500/20 w-fit px-2 py-1 rounded border border-indigo-500/30">
-            <Lock className="w-3 h-3" />
+          <div className="flex items-center gap-1 mt-2 text-xs font-medium text-amber-200 bg-amber-500/10 w-fit px-2 py-1 rounded border border-amber-400/40">
+            <Lock className="w-3 h-3 text-amber-200" />
             Locked in Contract
           </div>
         </div>
@@ -81,7 +81,7 @@ export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, onTran
           <button
             onClick={() => setActiveTab('deposit')}
             className={`flex-1 py-4 text-sm font-semibold flex items-center justify-center gap-2 transition-colors ${
-              isDeposit ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+              isDeposit ? 'text-amber-600 border-b-2 border-amber-500 bg-amber-50/40' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
             }`}
           >
             <ArrowDownLeft className="w-4 h-4" />
@@ -90,7 +90,7 @@ export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, onTran
           <button
             onClick={() => setActiveTab('withdraw')}
             className={`flex-1 py-4 text-sm font-semibold flex items-center justify-center gap-2 transition-colors ${
-              !isDeposit ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+              !isDeposit ? 'text-amber-600 border-b-2 border-amber-500 bg-amber-50/40' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
             }`}
           >
             <ArrowUpRight className="w-4 h-4" />
@@ -113,13 +113,13 @@ export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, onTran
                 onChange={handleAmountChange}
                 placeholder="0.00"
                 disabled={isProcessing}
-                className="block w-full pl-8 pr-20 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-lg font-medium placeholder:text-slate-300"
+                className="block w-full pl-8 pr-20 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all text-lg font-medium placeholder:text-slate-300"
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-2">
                 <button
                   type="button"
                   onClick={handleSetMax}
-                  className="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition-colors"
+                  className="text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded transition-colors"
                 >
                   MAX
                 </button>
@@ -134,30 +134,30 @@ export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, onTran
             </div>
 
             {isDeposit ? (
-               <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex gap-3 mb-6">
-                 <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                 <p className="text-xs text-blue-800 leading-relaxed">
-                   Depositing moves funds from your external wallet into the secure Escrow Smart Contract. These funds can be programmed for release based on conditional logic.
-                 </p>
-               </div>
+              <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex gap-3 mb-6">
+                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                <p className="text-xs text-amber-900 leading-relaxed">
+                  Depositing moves funds from your external wallet into the Lightning Bounties escrow contract, ready for conditional release when work is delivered.
+                </p>
+              </div>
             ) : (
-                <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex gap-3 mb-6">
-                 <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                 <p className="text-xs text-amber-800 leading-relaxed">
-                   Withdrawing returns funds from the Escrow Smart Contract back to your connected external wallet.
-                 </p>
-               </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex gap-3 mb-6">
+                <AlertCircle className="w-5 h-5 text-slate-700 flex-shrink-0" />
+                <p className="text-xs text-slate-700 leading-relaxed">
+                  Withdrawing returns funds from the escrow contract back to your connected wallet so you can reallocate bounties.
+                </p>
+              </div>
             )}
 
             <button
               type="submit"
               disabled={isProcessing || !amount || parseFloat(amount) <= 0 || parseFloat(amount) > maxAmount}
-              className={`w-full py-3.5 rounded-xl font-semibold shadow-sm text-white flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] ${
+              className={`w-full py-3.5 rounded-xl font-semibold shadow-sm flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] ${
                 isProcessing 
-                  ? 'bg-slate-400 cursor-not-allowed' 
+                  ? 'bg-slate-400 cursor-not-allowed text-white' 
                   : isDeposit 
-                    ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200' 
-                    : 'bg-slate-900 hover:bg-slate-800 shadow-slate-200'
+                    ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200 text-slate-900' 
+                    : 'bg-slate-900 hover:bg-slate-800 shadow-slate-200 text-white'
               }`}
             >
               {isProcessing && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}

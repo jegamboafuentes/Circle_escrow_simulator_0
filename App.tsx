@@ -111,12 +111,12 @@ function App() {
       <main className="flex-grow container mx-auto px-4 py-8 max-w-5xl">
         <div className="mb-8 text-center sm:text-left">
           <h1 className="text-3xl font-bold text-slate-900 flex items-center justify-center sm:justify-start gap-3">
-            <ShieldCheck className="w-8 h-8 text-indigo-600" />
-            Circle Escrow Sandbox
+            <ShieldCheck className="w-8 h-8 text-amber-500" />
+            Lightning Bounties - Circle SDK Escrow Test
           </h1>
           <p className="text-slate-500 mt-2 max-w-2xl">
-            Test deposit and withdrawal flows using the Circle SDK simulation. 
-            Securely move funds between your connected wallet and the escrow smart contract.
+            Run Circle SDK escrow flows in a Lightning Bounties-branded sandbox. 
+            Move test funds between your connected wallet and the escrow contract to simulate bounty payouts.
           </p>
         </div>
 
@@ -127,7 +127,7 @@ function App() {
             </div>
             <h2 className="text-2xl font-semibold mb-2">Connect your Wallet</h2>
             <p className="text-slate-500 mb-8 text-center max-w-md">
-              To begin testing the Escrow SDK, please connect a supported Ethereum wallet (simulated).
+              Connect a simulated Ethereum wallet to explore Lightning Bounties escrow deposit and withdrawal flows.
             </p>
             <WalletConnect onConnect={handleConnect} isLoading={isProcessing} />
           </div>
@@ -150,7 +150,7 @@ function App() {
 
       <footer className="border-t border-slate-200 bg-white py-6">
         <div className="container mx-auto px-4 text-center text-slate-400 text-sm">
-          <p>© {new Date().getFullYear()} Escrow SDK Tester. Not for real money usage.</p>
+          <p>© {new Date().getFullYear()} Lightning Bounties Escrow Test. Not for real money usage.</p>
         </div>
       </footer>
     </div>

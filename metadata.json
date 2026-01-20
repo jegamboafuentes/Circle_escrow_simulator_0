@@ -1,5 +1,5 @@
 {
-  "name": "Circle Escrow Simulator",
-  "description": "A UI interface for testing Circle SDK Escrow workflows, simulating wallet connection, deposits, and withdrawals.",
+  "name": "Lightning Bounties - Circle SDK Escrow Test",
+  "description": "Lightning Bounties-branded UI for testing Circle SDK escrow workflows, simulating wallet connection, deposits, and withdrawals.",
   "requestFramePermissions": []
 }
