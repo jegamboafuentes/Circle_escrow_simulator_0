@@ -8,6 +8,10 @@ This contains everything you need to run your app locally.
 
 View your app in AI Studio: https://ai.studio/apps/drive/1u1zcL-c2lsXdOqR-7xfm2bfteLdGwv6F
 
+## About this project
+
+This project is a Lightning Bounties test to explore using USDC as an escrow rail for paying out and receiving bounty rewards.
+
 ## Run Locally
 
 **Prerequisites:**  Node.js
