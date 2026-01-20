@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { EscrowDashboard } from './components/EscrowDashboard';
 import { WalletConnect } from './components/WalletConnect';
@@ -150,7 +150,7 @@ function App() {
 
       <footer className="border-t border-slate-200 bg-white py-6">
         <div className="container mx-auto px-4 text-center text-slate-400 text-sm">
-          <p>© {new Date().getFullYear()} Lightning Bounties Escrow Test. Not for real money usage.</p>
+          <p>\u00A9 2026 Lightning Bounties Escrow Test. Circle APIs used</p>
         </div>
       </footer>
     </div>
@@ -158,3 +158,5 @@ function App() {
 }
 
 export default App;
+
+
