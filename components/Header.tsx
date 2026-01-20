@@ -14,10 +14,12 @@ export const Header: React.FC<HeaderProps> = ({ wallet, onConnect, onDisconnect,
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm">
-            <span className="text-slate-900 font-extrabold text-sm tracking-tight">LB</span>
-          </div>
-          <span className="font-bold text-slate-900 text-lg hidden sm:block">Lightning Bounties</span>
+          <img
+            src="/logo.png"
+            alt="Lightning Bounties logo"
+            className="w-10 h-10 rounded-lg border border-amber-200 bg-white object-contain p-1 shadow-sm"
+          />
+          <span className="font-bold text-slate-900 text-lg hidden sm:block whitespace-nowrap">Lightning Bounties</span>
           <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-medium ml-2 border border-amber-200">
             TESTNET
           </span>
