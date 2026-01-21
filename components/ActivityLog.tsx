@@ -80,7 +80,9 @@ export const ActivityLog: React.FC<ActivityLogProps> = ({ transactions }) => {
                  
                  {tx.hash && (
                    <a 
-                    href={`#tx/${tx.hash}`} 
+                    href={`https://sepolia.etherscan.io/tx/${tx.hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-indigo-500 transition-colors"
                    >
                      Hash: {tx.hash.substring(0, 6)}...

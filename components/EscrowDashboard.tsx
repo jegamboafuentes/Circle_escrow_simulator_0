@@ -141,11 +141,16 @@ export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, onTran
                 </p>
               </div>
             ) : (
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex gap-3 mb-6">
-                <AlertCircle className="w-5 h-5 text-slate-700 flex-shrink-0" />
-                <p className="text-xs text-slate-700 leading-relaxed">
-                  Withdrawing returns funds from the escrow contract back to your connected wallet so you can reallocate bounties.
-                </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-3 mb-6">
+                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                <div className="text-xs text-amber-900 leading-relaxed">
+                  <p className="font-semibold mb-1">Note: Withdrawals require escrow contract integration</p>
+                  <p>
+                    This simplified implementation simulates withdrawals for UI purposes. 
+                    Real withdrawals require an escrow smart contract with a withdraw function. 
+                    The transaction will show an error if attempted without proper escrow contract setup.
+                  </p>
+                </div>
               </div>
             )}
 
