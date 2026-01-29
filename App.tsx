@@ -255,7 +255,7 @@ function App() {
           
           {/* --- NEW FOOTER INFO --- */}
           <div className="mt-2 text-xs text-slate-300 font-mono break-all">
-            Network: {import.meta.env.VITE_NETWORK || 'sepolia'} | 
+            Network: {import.meta.env.VITE_NETWORK || 'not env variable connected'} | 
             Contract: {import.meta.env.VITE_ESCROW_ADDRESS}
           </div>
         </div>
