@@ -17,7 +17,7 @@ const RPC_URLS: Record<string, string> = {
   amoy: 'https://rpc-amoy.polygon.technology',
 };
 
-// 1. ERC20 ABI (For interacting with USDC)
+// 1. ERC20 ABI
 const ERC20_ABI = [
   'function transfer(address to, uint256 amount) returns (bool)',
   'function balanceOf(address account) view returns (uint256)',
@@ -26,11 +26,11 @@ const ERC20_ABI = [
   'function allowance(address owner, address spender) view returns (uint256)',
 ];
 
-// 2. ESCROW ABI (For interacting with YOUR contract)
+// 2. ESCROW ABI
 const ESCROW_ABI = [
   "function deposit(uint256 amount)",
   "function withdraw(uint256 amount)",
-  "function deposits(address account) view returns (uint256)"
+  "function deposits(address account) view returns (uint256)" // This reads the balance!
 ];
 
 const getNetwork = (): string => {
@@ -90,7 +90,6 @@ export const getUSDCBalance = async (address: string): Promise<number> => {
   if (!contractAddress) throw new Error(`USDC contract not configured for ${network}`);
 
   try {
-    // FIX: Removed typo 'HZ'
     const provider = new JsonRpcProvider(rpcUrl);
     const contract = new Contract(contractAddress, ERC20_ABI, provider);
     const decimals = await contract.decimals();
@@ -114,7 +113,35 @@ export const getNativeBalance = async (address: string): Promise<number> => {
   }
 };
 
-// --- TRANSFER LOGIC ---
+// --- NEW FUNCTION: READ REAL ESCROW BALANCE ---
+export const getEscrowBalance = async (address: string): Promise<number> => {
+  const network = getNetwork();
+  const escrowAddress = getEscrowAddress();
+  const usdcAddress = USDC_CONTRACT_ADDRESSES[network];
+  const rpcUrl = RPC_URLS[network];
+
+  if (!escrowAddress) return 0;
+
+  try {
+    const provider = new JsonRpcProvider(rpcUrl);
+    
+    // We need USDC contract just to get decimals (usually 6)
+    const usdcContract = new Contract(usdcAddress, ERC20_ABI, provider);
+    const decimals = await usdcContract.decimals();
+
+    // Now talk to your Escrow contract
+    const escrowContract = new Contract(escrowAddress, ESCROW_ABI, provider);
+    
+    // "deposits" is the mapping public variable in your solidity code
+    const balance = await escrowContract.deposits(address);
+    
+    return parseFloat(formatUnits(balance, decimals));
+  } catch (error) {
+    console.error("Failed to fetch escrow balance:", error);
+    return 0;
+  }
+};
+
 export const transferUSDC = async (
   signer: any,
   userAddress: string,
@@ -129,49 +156,35 @@ export const transferUSDC = async (
   if (!escrowAddress) throw new Error('Escrow address missing. Check your .env file.');
 
   try {
-    // 1. Setup Contracts
     const usdcContract = new Contract(usdcAddress, ERC20_ABI, signer);
     const escrowContract = new Contract(escrowAddress, ESCROW_ABI, signer);
-    
-    // 2. Prepare Amount
     const decimals = await usdcContract.decimals();
     const amountInUnits = parseUnits(amount.toString(), decimals);
 
     let tx;
 
     if (type === TransactionType.DEPOSIT) {
-      // === DEPOSIT FLOW ===
-      
-      // A. Check USDC Balance
       const balance = await usdcContract.balanceOf(userAddress);
-      if (balance < amountInUnits) {
-        throw new Error(`Insufficient USDC balance.`);
-      }
+      if (balance < amountInUnits) throw new Error(`Insufficient USDC balance.`);
 
-      // B. Approve Escrow to spend your USDC
       console.log("Approving Escrow Contract...");
       const currentAllowance = await usdcContract.allowance(userAddress, escrowAddress);
-      // FIX: Removed typo 'WX'
+      
       if (currentAllowance < amountInUnits) {
           const approveTx = await usdcContract.approve(escrowAddress, amountInUnits);
-          await approveTx.wait(); // Wait for approval to mine
+          await approveTx.wait(); 
           console.log("Approval confirmed.");
       }
 
-      // C. Call Deposit
       console.log("Calling deposit()...");
       tx = await escrowContract.deposit(amountInUnits);
 
     } else {
-      // === WITHDRAW FLOW ===
       console.log("Calling withdraw()...");
       tx = await escrowContract.withdraw(amountInUnits);
     }
 
-    // 3. Wait for Transaction
-    // FIX: Removed typo 'HZ'
     const receipt = await tx.wait();
-    
     return { hash: receipt.hash, success: true };
 
   } catch (error: any) {

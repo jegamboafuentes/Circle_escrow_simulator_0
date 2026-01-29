@@ -8,6 +8,7 @@ import {
   connectWallet,
   getUSDCBalance,
   getNativeBalance,
+  getEscrowBalance, // We imported this new function
   transferUSDC,
   getCurrentAccount,
   onAccountChange,
@@ -83,17 +84,17 @@ function App() {
     if (!wallet.address) return;
 
     try {
-      const [usdcBalance, nativeBalance] = await Promise.all([
+      // NOW FETCHING REAL ESCROW BALANCE FROM BLOCKCHAIN
+      const [usdcBalance, nativeBalance, escrowTotal] = await Promise.all([
         getUSDCBalance(wallet.address),
         getNativeBalance(wallet.address),
+        getEscrowBalance(wallet.address) // <--- This reads from your contract
       ]);
 
-      // For escrow balance, we'll track it locally since we don't have a real escrow contract
-      // In a production app, you'd query the escrow contract for the user's balance
       setWallet(prev => ({
         ...prev,
         balance: usdcBalance,
-        // escrowBalance is tracked locally based on transactions
+        escrowBalance: escrowTotal // Update with real data
       }));
     } catch (error: any) {
       console.error('Failed to update balances:', error);
@@ -105,23 +106,21 @@ function App() {
     setError(null);
 
     try {
-      // Switch to correct network
       await switchToNetwork();
-
-      // Connect wallet
       const connection = await connectWallet();
       setWalletConnection(connection);
 
       // Get initial balances
-      const [usdcBalance] = await Promise.all([
+      const [usdcBalance, escrowTotal] = await Promise.all([
         getUSDCBalance(connection.address),
+        getEscrowBalance(connection.address)
       ]);
 
       setWallet({
         isConnected: true,
         address: connection.address,
         balance: usdcBalance,
-        escrowBalance: 0.00, // Start with 0, will be updated based on transactions
+        escrowBalance: escrowTotal, // Initialize with real balance
       });
     } catch (error: any) {
       setError(error.message || 'Failed to connect wallet');
@@ -152,7 +151,6 @@ function App() {
     setIsProcessing(true);
     setError(null);
 
-    // Create pending transaction
     const newTx: Transaction = {
       id: Math.random().toString(36).substring(7),
       type,
@@ -164,38 +162,19 @@ function App() {
     setTransactions(prev => [newTx, ...prev]);
 
     try {
-      // Execute real USDC transfer
       const result = await transferUSDC(walletConnection.signer, wallet.address!, amount, type);
 
       if (!result.success) {
         throw new Error(result.error || 'Transaction failed');
       }
 
-      // Update balances
-      if (type === TransactionType.DEPOSIT) {
-        setWallet(prev => ({
-          ...prev,
-          balance: prev.balance - amount,
-          escrowBalance: prev.escrowBalance + amount,
-        }));
-      } else {
-        // For withdrawals, we'd need escrow contract integration
-        // For now, we'll just update the local state
-        setWallet(prev => ({
-          ...prev,
-          balance: prev.balance + amount,
-          escrowBalance: prev.escrowBalance - amount,
-        }));
-      }
-
-      // Update transaction status
       setTransactions(prev => prev.map(tx =>
         tx.id === newTx.id
           ? { ...tx, status: TransactionStatus.COMPLETED, hash: result.hash }
           : tx
       ));
 
-      // Refresh balances after a short delay
+      // Quick refresh to see new balances
       setTimeout(updateBalances, 2000);
     } catch (error: any) {
       console.error('Transaction failed', error);
@@ -272,7 +251,13 @@ function App() {
 
       <footer className="border-t border-slate-200 bg-white py-6">
         <div className="container mx-auto px-4 text-center text-slate-400 text-sm">
-          <p>\u00A9 2026 Lightning Bounties Escrow Test. Circle APIs used</p>
+          <p>© 2026 Lightning Bounties Escrow Test. Circle APIs used</p>
+          
+          {/* --- NEW FOOTER INFO --- */}
+          <div className="mt-2 text-xs text-slate-300 font-mono break-all">
+            Network: {import.meta.env.VITE_NETWORK || 'sepolia'} | 
+            Contract: {import.meta.env.VITE_ESCROW_ADDRESS}
+          </div>
         </div>
       </footer>
     </div>
@@ -280,5 +265,3 @@ function App() {
 }
 
 export default App;
-
-
