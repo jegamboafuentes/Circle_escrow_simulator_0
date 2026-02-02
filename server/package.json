@@ -1,0 +1,19 @@
+{
+  "name": "usdc-bounty-server",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "job:check-prs": "node jobs/checkMergedPRs.js",
+    "job:payouts": "node jobs/runPayouts.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0",
+    "express": "^4.21.1"
+  }
+}

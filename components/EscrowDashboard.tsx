@@ -4,15 +4,17 @@ import { ArrowDownLeft, ArrowUpRight, DollarSign, Lock, AlertCircle } from 'luci
 
 interface EscrowDashboardProps {
   wallet: WalletState;
+  reserved?: number;
   onTransaction: (type: TransactionType, amount: number) => void;
   isProcessing: boolean;
 }
 
-export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, onTransaction, isProcessing }) => {
+export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, reserved = 0, onTransaction, isProcessing }) => {
   const [amount, setAmount] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
 
-  const maxAmount = activeTab === 'deposit' ? wallet.balance : wallet.escrowBalance;
+  const availableEscrow = Math.max(0, wallet.escrowBalance - reserved);
+  const maxAmount = activeTab === 'deposit' ? wallet.balance : availableEscrow;
   
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -68,9 +70,17 @@ export const EscrowDashboard: React.FC<EscrowDashboardProps> = ({ wallet, onTran
           <h3 className="text-3xl font-bold text-white tracking-tight">
             ${wallet.escrowBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </h3>
-          <div className="flex items-center gap-1 mt-2 text-xs font-medium text-amber-200 bg-amber-500/10 w-fit px-2 py-1 rounded border border-amber-400/40">
-            <Lock className="w-3 h-3 text-amber-200" />
-            Locked in Contract
+          <div className="mt-2 space-y-1">
+            <div className="flex items-center gap-1 text-xs font-medium text-amber-200 bg-amber-500/10 w-fit px-2 py-1 rounded border border-amber-400/40">
+              <Lock className="w-3 h-3 text-amber-200" />
+              Locked in Contract
+            </div>
+            {reserved > 0 && (
+              <>
+                <p className="text-xs text-slate-400">Reserved (bounties): ${reserved.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                <p className="text-xs text-emerald-300">Available: ${availableEscrow.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+              </>
+            )}
           </div>
         </div>
       </div>

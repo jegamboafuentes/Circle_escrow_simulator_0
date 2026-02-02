@@ -3,12 +3,14 @@ import { Header } from './components/Header';
 import { EscrowDashboard } from './components/EscrowDashboard';
 import { WalletConnect } from './components/WalletConnect';
 import { ActivityLog } from './components/ActivityLog';
+import { PostBounty } from './components/PostBounty';
+import { BountyList } from './components/BountyList';
 import { WalletState, Transaction, TransactionType, TransactionStatus } from './types';
 import {
   connectWallet,
   getUSDCBalance,
   getNativeBalance,
-  getEscrowBalance, // We imported this new function
+  getEscrowBalance,
   transferUSDC,
   getCurrentAccount,
   onAccountChange,
@@ -17,6 +19,7 @@ import {
   isWalletAvailable,
   type WalletConnection,
 } from './services/walletService';
+import { getMe, getReserved, type MeResponse } from './services/api';
 import { ShieldCheck, Wallet } from 'lucide-react';
 
 function App() {
@@ -31,6 +34,33 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [walletConnection, setWalletConnection] = useState<WalletConnection | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [me, setMe] = useState<MeResponse | null>(null);
+  const [reserved, setReserved] = useState<number>(0);
+
+  // Handle return from GitHub OAuth: clear URL; me will refresh when wallet is connected
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const github = params.get('github');
+    if (github === 'linked') {
+      window.history.replaceState({}, '', window.location.pathname);
+      if (wallet.address) getMe(wallet.address).then(setMe).catch(() => {});
+    } else if (github === 'error') {
+      const msg = params.get('message') || 'GitHub link failed';
+      setError(msg);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  // Fetch /api/me and reserved when wallet is connected
+  useEffect(() => {
+    if (!wallet.isConnected || !wallet.address) {
+      setMe(null);
+      setReserved(0);
+      return;
+    }
+    getMe(wallet.address).then(setMe).catch(() => setMe(null));
+    getReserved(wallet.address).then((r) => setReserved(r.reserved)).catch(() => setReserved(0));
+  }, [wallet.isConnected, wallet.address]);
 
   // Check for existing connection on mount
   useEffect(() => {
@@ -193,6 +223,7 @@ function App() {
     <div className="min-h-screen flex flex-col text-slate-800">
       <Header 
         wallet={wallet} 
+        me={me}
         onConnect={handleConnect} 
         onDisconnect={handleDisconnect}
         isConnecting={isProcessing && !wallet.isConnected}
@@ -233,17 +264,27 @@ function App() {
             <WalletConnect onConnect={handleConnect} isLoading={isProcessing} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <EscrowDashboard 
-                wallet={wallet} 
-                onTransaction={handleTransaction}
-                isProcessing={isProcessing}
-              />
-            </div>
-            
-            <div className="lg:col-span-1">
-              <ActivityLog transactions={transactions} />
+          <div className="space-y-8">
+            <PostBounty
+              walletAddress={wallet.address!}
+              onFunded={() => wallet.address && getReserved(wallet.address).then((r) => setReserved(r.reserved))}
+            />
+            <BountyList
+              walletAddress={wallet.address}
+              onBountyChange={() => wallet.address && getReserved(wallet.address).then((r) => setReserved(r.reserved))}
+            />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <EscrowDashboard
+                  wallet={wallet}
+                  reserved={reserved}
+                  onTransaction={handleTransaction}
+                  isProcessing={isProcessing}
+                />
+              </div>
+              <div className="lg:col-span-1">
+                <ActivityLog transactions={transactions} />
+              </div>
             </div>
           </div>
         )}

@@ -1,15 +1,20 @@
 import React from 'react';
 import { WalletState } from '../types';
-import { Wallet, LogOut, ChevronDown } from 'lucide-react';
+import { Wallet, LogOut, Github } from 'lucide-react';
+import { getGitHubConnectUrl } from '../services/api';
+import type { MeResponse } from '../services/api';
 
 interface HeaderProps {
   wallet: WalletState;
+  me: MeResponse | null;
   onConnect: () => void;
   onDisconnect: () => void;
   isConnecting: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ wallet, onConnect, onDisconnect, isConnecting }) => {
+export const Header: React.FC<HeaderProps> = ({ wallet, me, onConnect, onDisconnect, isConnecting }) => {
+  const githubLinked = me?.github?.login;
+
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -28,17 +33,31 @@ export const Header: React.FC<HeaderProps> = ({ wallet, onConnect, onDisconnect,
         <div>
           {wallet.isConnected ? (
             <div className="flex items-center gap-3">
-               <div className="hidden sm:flex flex-col items-end mr-2">
-                  <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Connected</span>
-                  <span className="text-sm font-semibold text-slate-800 font-mono">{wallet.address}</span>
-               </div>
-               <button 
+              {githubLinked ? (
+                <span className="hidden sm:flex items-center gap-1.5 text-sm text-slate-600">
+                  <Github className="w-4 h-4" />
+                  @{githubLinked}
+                </span>
+              ) : (
+                <a
+                  href={wallet.address ? getGitHubConnectUrl(wallet.address) : '#'}
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors text-sm font-medium"
+                >
+                  <Github className="w-4 h-4" />
+                  Connect GitHub
+                </a>
+              )}
+              <div className="hidden sm:flex flex-col items-end mr-2">
+                <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Connected</span>
+                <span className="text-sm font-semibold text-slate-800 font-mono">{wallet.address}</span>
+              </div>
+              <button
                 onClick={onDisconnect}
                 className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium"
-               >
-                 <LogOut className="w-4 h-4" />
-                 <span className="hidden sm:inline">Disconnect</span>
-               </button>
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Disconnect</span>
+              </button>
             </div>
           ) : (
             <button
