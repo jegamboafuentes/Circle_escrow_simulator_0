@@ -72,3 +72,23 @@ The app uses:
 - **ethers.js v6** for Web3 wallet integration
 - **Circle USDC** contracts on testnet
 - **Vite** for development and building
+
+# Enable Sepolia and USDC in Metamask
+
+## 1- Enable Sepolia Network in MetaMask 
+
+The Sepolia network is built into MetaMask by default but is often hidden. 
+
+-   **Open MetaMask** and click the **Network Selector** (top left).
+-   Toggle on **"Show test networks"**.
+-   Select **Sepolia** from the list. 
+
+## 2-Import USDC Token to MetaMask 
+
+You must manually add the USDC contract address to see your balance. 
+
+-   In MetaMask, make sure you are on the **Sepolia** network.
+-   Scroll to the bottom and click **"Import tokens"**.
+-   Select the **"Custom token"** tab.
+-   Paste the official **Circle Sepolia USDC Contract Address**: `0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`.
+-   The symbol (USDC) and decimals (6) should auto-populate. Click **"Add custom token"**. 
